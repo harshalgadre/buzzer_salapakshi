@@ -35,7 +35,7 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setUserData(data.data);
-        setNewName(data.data.fullName);
+        setNewName(data.data?.fullName || '');
       } else if (response.status === 401) {
         console.error('Authentication failed, redirecting to login');
         localStorage.removeItem('token');
@@ -73,7 +73,7 @@ export default function Dashboard() {
           email: session.user.email,
           provider: session.user.provider || 'google'
         });
-        setNewName(session.user.name);
+        setNewName(session.user.name || '');
         setLoading(false);
       } else {
         fetchUserData();
@@ -326,7 +326,7 @@ export default function Dashboard() {
           <div className="mb-6 md:mb-8">
             <h2 className="text-xl md:text-2xl font-semibold text-black mb-4 flex items-center">
               <span className="mr-2">👋</span>
-              Welcome, {loading ? '...' : userData ? userData.fullName.split(' ')[0] : 'User'}!
+              Welcome, {loading ? '...' : userData && userData.fullName ? userData.fullName.split(' ')[0] : 'User'}!
             </h2>
           </div>
 
