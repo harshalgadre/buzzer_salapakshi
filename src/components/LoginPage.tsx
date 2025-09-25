@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleGoogleLogin = async () => {
     try {
@@ -18,6 +21,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
     
     try {
@@ -32,12 +36,17 @@ export default function LoginPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
-        // TODO: Redirect to dashboard or home
+        // Store token in localStorage (you might want to use a more secure method)
+        localStorage.setItem('token', data.token);
+        // Redirect to dashboard
+        router.push('/dashboard');
       } else {
-        const error = await response.json();
-        console.error('Login failed:', error);
+        const errorData = await response.json();
+        setError(errorData.message || 'Login failed');
+        console.error('Login failed:', errorData);
       }
     } catch (error) {
+      setError('Network error. Please try again.');
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
@@ -78,6 +87,11 @@ export default function LoginPage() {
 
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
             <div>
               <input
                 type="email"
