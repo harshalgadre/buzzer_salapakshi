@@ -23,7 +23,7 @@ async function verifyToken(token: string) {
   try {
     const decoded = jwt.verify(token, jwtSecret) as { id: string };
     return decoded;
-  } catch (error: unknown) {
+  } catch {
     throw new Error('Invalid or expired token');
   }
 }
@@ -117,10 +117,11 @@ export async function PUT(request: NextRequest) {
       message: 'Password updated successfully'
     });
 
-  } catch (error: unknown) {
+  } catch (error: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
     console.error('Password change error:', error);
     
-    if (error instanceof Error && error.message === 'Invalid or expired token') {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage === 'Invalid or expired token') {
       return NextResponse.json(
         { success: false, message: 'Invalid or expired token' },
         { status: 401 }
