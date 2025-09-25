@@ -40,14 +40,15 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         await dbConnect();
         const dbUser = await User.findOne({ email: user.email });
         if (dbUser) {
           token.id = dbUser._id.toString();
           token.provider = dbUser.provider;
-          // Generate JWT for compatibility
+          token.fullName = dbUser.fullName;
+          // Generate JWT for compatibility with existing API
           token.jwt = dbUser.getSignedJwtToken();
         }
       }
@@ -58,6 +59,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.provider = token.provider as string;
         session.user.jwt = token.jwt as string;
+        session.user.name = token.fullName as string;
       }
       return session;
     },
@@ -67,5 +69,13 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  events: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        console.log('Google sign-in successful for:', user.email);
+      }
+    },
   },
 };
