@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
     
     console.log('Login attempt for email:', email);
     console.log('User found:', !!user);
+    console.log('User provider:', user?.provider);
+    console.log('User has password:', !!user?.password);
     
     // If no user found and this is a test email, create a test user
     if (!user && email === 'test@example.com') {
@@ -69,7 +71,17 @@ export async function POST(req: NextRequest) {
     }
     
     // Generate JWT token
-    const token = user.getSignedJwtToken();
+    let token;
+    try {
+      token = user.getSignedJwtToken();
+      console.log('JWT token generated successfully');
+    } catch (jwtError) {
+      console.error('JWT generation error:', jwtError);
+      return NextResponse.json(
+        { success: false, message: 'Authentication error' },
+        { status: 500 }
+      );
+    }
     
     return NextResponse.json(
       { success: true, token },

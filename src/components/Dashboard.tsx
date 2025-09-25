@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import InterviewHistory from './InterviewHistory';
+import { validatePasswordChange, generatePasswordStrengthText } from '@/lib/password-utils';
+import { canChangePassword } from '@/lib/test-utils';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -14,6 +16,8 @@ export default function Dashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userData, setUserData] = useState<{ fullName: string; email: string; provider?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({ type: null, text: '' });
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -69,6 +73,13 @@ export default function Dashboard() {
         const data = await response.json();
         setUserData(data.data);
         setNewName(data.data.fullName);
+      } else if (response.status === 401) {
+        console.error('Authentication failed, redirecting to login');
+        localStorage.removeItem('token');
+        router.push('/login');
+        return;
+      } else {
+        console.error('Error fetching user data:', response.status);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -106,19 +117,24 @@ export default function Dashboard() {
   };
 
   const handlePasswordUpdate = async () => {
-    if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+    // Clear previous messages
+    setPasswordMessage({ type: null, text: '' });
+
+    // Validation using utility function
+    const validation = validatePasswordChange(currentPassword, newPassword, confirmPassword);
+    if (!validation.isValid) {
+      setPasswordMessage({ type: 'error', text: validation.errors[0] });
       return;
     }
 
-    if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters long');
-      return;
-    }
+    setPasswordLoading(true);
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setPasswordMessage({ type: 'error', text: 'Authentication token not found. Please log in again.' });
+        return;
+      }
 
       const response = await fetch('/api/auth/change-password', {
         method: 'PUT',
@@ -132,18 +148,21 @@ export default function Dashboard() {
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        alert('Password updated successfully!');
+        setPasswordMessage({ type: 'success', text: 'Password updated successfully!' });
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to update password');
+        setPasswordMessage({ type: 'error', text: data.message || 'Failed to update password' });
       }
     } catch (error) {
       console.error('Error updating password:', error);
-      alert('Failed to update password');
+      setPasswordMessage({ type: 'error', text: 'Network error. Please try again.' });
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -333,38 +352,102 @@ export default function Dashboard() {
           {/* Change Password Section */}
           <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 md:mb-8">
             <h3 className="text-base md:text-lg font-medium text-black mb-4">Change Password</h3>
-            {userData?.provider === 'google' ? (
-              <div className="text-sm text-gray-600">
-                Password change is not available for Google accounts. You can manage your password through your Google account settings.
+            {!canChangePassword(userData) ? (
+              <div className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-md p-3">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  Password change is not available for Google accounts. You can manage your password through your Google account settings.
+                </div>
               </div>
             ) : (
               <div className="space-y-4 max-w-full md:max-w-md">
+                {/* Success/Error Message */}
+                {passwordMessage.type && (
+                  <div className={`p-3 rounded-md text-sm ${
+                    passwordMessage.type === 'success' 
+                      ? 'bg-green-50 border border-green-200 text-green-800' 
+                      : 'bg-red-50 border border-red-200 text-red-800'
+                  }`}>
+                    <div className="flex items-center">
+                      {passwordMessage.type === 'success' ? (
+                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                      {passwordMessage.text}
+                    </div>
+                  </div>
+                )}
+
                 <input
                   type="password"
                   placeholder="Current Password"
                   value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
+                  onChange={(e) => {
+                    setCurrentPassword(e.target.value);
+                    if (passwordMessage.type) setPasswordMessage({ type: null, text: '' });
+                  }}
+                  disabled={passwordLoading}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
+                <div>
+                  <input
+                    type="password"
+                    placeholder="New Password (min. 6 characters)"
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      if (passwordMessage.type) setPasswordMessage({ type: null, text: '' });
+                    }}
+                    disabled={passwordLoading}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                  {newPassword && (
+                    <div className="mt-1 text-sm">
+                      <span className="text-gray-600">Strength: </span>
+                      <span className={`font-medium ${
+                        generatePasswordStrengthText(newPassword) === 'Weak' ? 'text-red-600' :
+                        generatePasswordStrengthText(newPassword) === 'Medium' ? 'text-yellow-600' :
+                        'text-green-600'
+                      }`}>
+                        {generatePasswordStrengthText(newPassword)}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <input
                   type="password"
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
+                  placeholder="Confirm New Password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (passwordMessage.type) setPasswordMessage({ type: null, text: '' });
+                  }}
+                  disabled={passwordLoading}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 <button
                   onClick={handlePasswordUpdate}
-                  className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto"
+                  disabled={passwordLoading}
+                  className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                  UPDATE
+                  {passwordLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Updating...
+                    </>
+                  ) : (
+                    'UPDATE PASSWORD'
+                  )}
                 </button>
               </div>
             )}

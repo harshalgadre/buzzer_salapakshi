@@ -64,13 +64,23 @@ export default function LoginPage() {
         // Redirect to dashboard
         router.push('/dashboard');
       } else {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          errorData = { message: 'Unknown error occurred' };
+        }
+
+        console.error('Login failed - Status:', response.status, 'Data:', errorData);
+
         if (errorData.message === 'Invalid credentials') {
           setError('Invalid email or password. Please check your credentials or register if you haven\'t created an account yet.');
+        } else if (errorData.message) {
+          setError(errorData.message);
         } else {
-          setError(errorData.message || 'Login failed');
+          setError('Login failed. Please try again.');
         }
-        console.error('Login failed:', errorData);
       }
     } catch (error) {
       setError('Network error. Please try again.');
@@ -124,6 +134,11 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
+            
+            {/* Test Account Info */}
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded text-sm">
+              <strong>Test Account:</strong> Use email <code>test@example.com</code> with password <code>password123</code> to login, or register a new account below.
+            </div>
             <div>
               <input
                 type="email"
