@@ -4,9 +4,9 @@ import Interview from '@/models/Interview';
 import { authenticate, unauthorized, AuthRequest } from '@/middleware/auth';
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function GET(req: NextRequest, { params }: Params) {
@@ -20,8 +20,11 @@ export async function GET(req: NextRequest, { params }: Params) {
     
     await dbConnect();
     
+    // Await the params in Next.js 15
+    const { id } = await params;
+    
     // Get interview by ID
-    const interview = await Interview.findById(params.id);
+    const interview = await Interview.findById(id);
     
     if (!interview) {
       return NextResponse.json(
@@ -63,8 +66,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
     
     await dbConnect();
     
+    // Await the params in Next.js 15
+    const { id } = await params;
+    
     // Get interview by ID
-    let interview = await Interview.findById(params.id);
+    let interview = await Interview.findById(id);
     
     if (!interview) {
       return NextResponse.json(
@@ -84,7 +90,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     const body = await req.json();
     
     // Update interview
-    interview = await Interview.findByIdAndUpdate(params.id, body, {
+    interview = await Interview.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true
     });
@@ -114,8 +120,11 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     
     await dbConnect();
     
+    // Await the params in Next.js 15
+    const { id } = await params;
+    
     // Get interview by ID
-    const interview = await Interview.findById(params.id);
+    const interview = await Interview.findById(id);
     
     if (!interview) {
       return NextResponse.json(
@@ -133,7 +142,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
     
     // Delete interview
-    await Interview.findByIdAndDelete(params.id);
+    await Interview.findByIdAndDelete(id);
     
     return NextResponse.json(
       { success: true, data: {} },
