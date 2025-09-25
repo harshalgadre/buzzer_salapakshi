@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest) {
       message: 'Password updated successfully'
     });
 
-  } catch (error: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  } catch (error: unknown) {
     console.error('Password change error:', error);
     
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
