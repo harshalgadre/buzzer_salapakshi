@@ -51,10 +51,14 @@ UserSchema.pre('save', async function(next) {
 
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
   const expiresIn = (process.env.JWT_EXPIRES_IN || '30d') as jwt.SignOptions['expiresIn'];
   return jwt.sign(
     { id: this._id },
-    process.env.JWT_SECRET || 'defaultsecret',
+    jwtSecret,
     { expiresIn }
   );
 };
