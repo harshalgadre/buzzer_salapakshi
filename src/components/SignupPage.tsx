@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ export default function SignupPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToMarketing, setAgreedToMarketing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,14 +32,15 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     
     if (formData.password !== formData.retypePassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
 
     if (!agreedToTerms) {
-      alert('Please agree to the Terms of Service and Privacy Policy');
+      setError('Please agree to the Terms of Service and Privacy Policy');
       return;
     }
 
@@ -60,12 +64,17 @@ export default function SignupPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Signup successful:', data);
-        // TODO: Redirect to dashboard or login
+        // Store token in localStorage
+        localStorage.setItem('token', data.token);
+        // Redirect to dashboard
+        router.push('/dashboard');
       } else {
-        const error = await response.json();
-        console.error('Signup failed:', error);
+        const errorData = await response.json();
+        setError(errorData.message || 'Signup failed');
+        console.error('Signup failed:', errorData);
       }
     } catch (error) {
+      setError('Network error. Please try again.');
       console.error('Signup error:', error);
     } finally {
       setIsLoading(false);
@@ -106,6 +115,11 @@ export default function SignupPage() {
 
           {/* Signup Form */}
           <form onSubmit={handleSignup} className="space-y-4">
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
             <div>
               <input
                 type="text"
