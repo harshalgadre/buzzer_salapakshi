@@ -1,4 +1,20 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
+export interface IInterview extends mongoose.Document {
+  user: mongoose.Schema.Types.ObjectId;
+  scenario: string;
+  meetingLink: string;
+  position: string;
+  company: string;
+  language: string;
+  status: string;
+  scheduledTime: Date;
+  performance: {
+    rating: string;
+    feedback: string;
+  };
+  createdAt: Date;
+}
 
 const InterviewSchema = new mongoose.Schema({
   user: {
@@ -53,4 +69,4 @@ const InterviewSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Interview', InterviewSchema);
+export default mongoose.models.Interview || mongoose.model<IInterview>('Interview', InterviewSchema);

@@ -3,39 +3,34 @@ description: Repository Information Overview
 alwaysApply: true
 ---
 
-# AI Interview Helper Backend Information
+# AI Interview Helper Next.js Application
 
 ## Summary
-A Node.js Express backend API for an AI Interview Helper application that helps users prepare for job interviews with features including user authentication, JWT token-based authentication, session management, and interview session tracking.
+A Next.js application for an AI Interview Helper that helps users prepare for job interviews with features including user authentication, JWT token-based authentication, session management, and interview session tracking.
 
 ## Structure
 - `/src`: Core application code
-  - `/controllers`: Request handlers for routes
+  - `/app`: Next.js App Router structure
+    - `/api`: API routes for authentication and interview management
   - `/models`: MongoDB schema definitions
-  - `/routes`: API route definitions
-  - `/middleware`: Custom middleware functions
-  - `/config`: Configuration files
-- `server.js`: Main application entry point
+  - `/middleware`: Authentication middleware
+  - `/lib`: Utility functions including MongoDB connection
 
 ## Language & Runtime
-**Language**: JavaScript (Node.js)
-**Version**: Node.js 14+ compatible
-**Build System**: npm
-**Package Manager**: npm
+**Language**: TypeScript
+**Version**: Node.js 18+ compatible
+**Framework**: Next.js
+**Package Manager**: npm/yarn
 
 ## Dependencies
 **Main Dependencies**:
-- express: ^4.18.2 - Web framework
-- mongoose: ^7.5.0 - MongoDB ODM
-- jsonwebtoken: ^9.0.2 - JWT implementation
-- bcryptjs: ^2.4.3 - Password hashing
-- express-validator: ^7.0.1 - Request validation
-- dotenv: ^16.3.1 - Environment variable management
-- cors: ^2.8.5 - CORS middleware
-- morgan: ^1.10.0 - HTTP request logger
-
-**Development Dependencies**:
-- nodemon: ^3.0.1 - Development server with auto-reload
+- next: Latest version
+- react: Latest version
+- react-dom: Latest version
+- mongoose: For MongoDB ODM
+- jsonwebtoken: For JWT implementation
+- bcryptjs: For password hashing
+- tailwindcss: For styling
 
 ## Build & Installation
 ```bash
@@ -45,14 +40,12 @@ npm install
 # Run in development mode
 npm run dev
 
+# Build for production
+npm run build
+
 # Run in production mode
 npm start
 ```
-
-## Testing
-**Framework**: None specified yet
-**Test Location**: None specified yet
-**Run Command**: None specified yet
 
 ## API Endpoints
 
