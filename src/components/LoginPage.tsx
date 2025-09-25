@@ -158,7 +158,7 @@ export default function LoginPage() {
               Invite your friends to join our platform.
             </p>
             <p>
-              When they subscribe to a paid plan, you'll receive one month of Standard Plan extension.
+              When they subscribe to a paid plan&lsquo; you&apos;ll receive one month of Standard Plan extension.
             </p>
             <p>
               Share the love and enjoy the benefits together!
