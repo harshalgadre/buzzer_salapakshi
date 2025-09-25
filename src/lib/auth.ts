@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   events: {
-    async signIn({ user, account, profile: _profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === 'google') {
         console.log('Google sign-in successful for:', user.email);
       }
