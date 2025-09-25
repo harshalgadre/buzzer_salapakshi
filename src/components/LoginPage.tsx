@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   // Redirect if already authenticated
   useEffect(() => {

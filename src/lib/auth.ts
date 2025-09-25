@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile: _profile }) {
       if (account?.provider === 'google') {
         try {
           await dbConnect();
@@ -22,14 +22,14 @@ export const authOptions: NextAuthOptions = {
             const newUser = new User({
               fullName: user.name,
               email: user.email,
-              googleId: profile?.sub,
+              googleId: _profile?.sub,
               provider: 'google',
             });
             await newUser.save();
           } else if (existingUser.provider === 'local') {
             // If user exists with local auth, link Google ID
             if (!existingUser.googleId) {
-              existingUser.googleId = profile?.sub;
+              existingUser.googleId = _profile?.sub;
               await existingUser.save();
             }
           }
@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         await dbConnect();
         const dbUser = await User.findOne({ email: user.email });
@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   events: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile: _profile }) {
       if (account?.provider === 'google') {
         console.log('Google sign-in successful for:', user.email);
       }

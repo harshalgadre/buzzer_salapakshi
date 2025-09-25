@@ -33,13 +33,14 @@ export async function authenticate(req: AuthRequest) {
     const user = await User.findById(decoded.id);
     
     if (!user) {
+      console.error('User not found for token ID:', decoded.id);
       return null;
     }
     
     return user;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error('Auth error:', message);
+    console.error('Auth error:', message, 'Token:', token ? 'present' : 'missing');
     return null;
   }
 }

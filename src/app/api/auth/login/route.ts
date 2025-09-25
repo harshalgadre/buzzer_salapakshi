@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     // If no user found and this is a test email, create a test user
     if (!user && email === 'test@example.com') {
       console.log('Creating test user...');
-      const testUser = await User.create({
+      await User.create({
         fullName: 'Test User',
         email: 'test@example.com',
         password: 'password123',

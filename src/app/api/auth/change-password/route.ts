@@ -23,7 +23,7 @@ async function verifyToken(token: string) {
   try {
     const decoded = jwt.verify(token, jwtSecret) as { id: string };
     return decoded;
-  } catch (error) {
+  } catch (error: unknown) {
     throw new Error('Invalid or expired token');
   }
 }
@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest) {
       message: 'Password updated successfully'
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Password change error:', error);
     
     if (error instanceof Error && error.message === 'Invalid or expired token') {
