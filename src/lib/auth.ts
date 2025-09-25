@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         await dbConnect();
         const dbUser = await User.findOne({ email: user.email });
@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user.id = token.id as string;
         session.user.provider = token.provider as string;
-        (session.user as any).jwt = token.jwt;
+        session.user.jwt = token.jwt as string;
       }
       return session;
     },

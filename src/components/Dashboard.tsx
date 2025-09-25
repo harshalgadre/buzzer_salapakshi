@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import InterviewHistory from './InterviewHistory';
 
@@ -12,7 +11,6 @@ export default function Dashboard() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [newName, setNewName] = useState('Raj');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
   const { data: session } = useSession();
 
   useEffect(() => {

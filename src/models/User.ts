@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: function(this: any) { return this.provider === 'local'; },
+    required: function(this: IUser) { return this.provider === 'local'; },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
   },
