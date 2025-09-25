@@ -16,10 +16,16 @@ interface MongooseCache {
   promise: Promise<typeof mongoose> | null;
 }
 
-let cached: MongooseCache = (global as any).mongooseCache || { conn: null, promise: null };
+interface GlobalWithMongooseCache {
+  mongooseCache?: MongooseCache;
+}
 
-if (!(global as any).mongooseCache) {
-  (global as any).mongooseCache = cached;
+const globalWithCache = global as typeof globalThis & GlobalWithMongooseCache;
+
+const cached: MongooseCache = globalWithCache.mongooseCache || { conn: null, promise: null };
+
+if (!globalWithCache.mongooseCache) {
+  globalWithCache.mongooseCache = cached;
 }
 
 async function dbConnect() {

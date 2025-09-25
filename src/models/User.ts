@@ -51,9 +51,12 @@ UserSchema.pre('save', async function(next) {
 
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN
-  });
+  const expiresIn = (process.env.JWT_EXPIRES_IN || '30d') as jwt.SignOptions['expiresIn'];
+  return jwt.sign(
+    { id: this._id },
+    process.env.JWT_SECRET || 'defaultsecret',
+    { expiresIn }
+  );
 };
 
 // Match user entered password to hashed password in database
