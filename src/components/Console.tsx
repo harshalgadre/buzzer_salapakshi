@@ -86,7 +86,7 @@ export default function Console() {
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-2">Welcome</h2>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  to the world's leading stealth AI copilot for your online meetings!
+                  to the world&apos;s leading stealth AI copilot for your online meetings!
                 </p>
               </div>
 

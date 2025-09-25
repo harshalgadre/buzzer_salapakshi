@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import InterviewHistory from './InterviewHistory';
@@ -20,6 +20,36 @@ export default function Dashboard() {
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({ type: null, text: '' });
   const { data: session } = useSession();
   const router = useRouter();
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserData(data.data);
+        setNewName(data.data.fullName);
+      } else if (response.status === 401) {
+        console.error('Authentication failed, redirecting to login');
+        localStorage.removeItem('token');
+        router.push('/login');
+        return;
+      } else {
+        console.error('Error fetching user data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
 
   useEffect(() => {
     // Don't redirect if session is still loading
@@ -56,37 +86,7 @@ export default function Dashboard() {
       router.push('/login');
       return;
     }
-  }, [session, router]);
-
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserData(data.data);
-        setNewName(data.data.fullName);
-      } else if (response.status === 401) {
-        console.error('Authentication failed, redirecting to login');
-        localStorage.removeItem('token');
-        router.push('/login');
-        return;
-      } else {
-        console.error('Error fetching user data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [session, router, fetchUserData]);
 
   const handleNameSave = async () => {
     try {
