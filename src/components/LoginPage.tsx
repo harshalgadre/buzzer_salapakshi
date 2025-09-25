@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,8 +13,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      // Redirect to Google OAuth endpoint
-      window.location.href = '/api/auth/google';
+      await signIn('google', { callbackUrl: '/dashboard' });
     } catch (error) {
       console.error('Google login error:', error);
     }

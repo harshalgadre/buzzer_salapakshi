@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import InterviewHistory from './InterviewHistory';
 
 export default function Dashboard() {
@@ -12,6 +13,13 @@ export default function Dashboard() {
   const [newName, setNewName] = useState('Raj');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.jwt) {
+      localStorage.setItem('token', session.user.jwt);
+    }
+  }, [session]);
 
   const handleNameSave = () => {
     // TODO: Implement name change functionality
@@ -27,33 +35,9 @@ export default function Dashboard() {
     console.log('Updating password');
   };
 
-  const handleLogout = async () => {
-    try {
-      // Call logout API
-      const response = await fetch('/api/auth/logout', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      if (response.ok) {
-        // Clear token from localStorage
-        localStorage.removeItem('token');
-        // Redirect to landing page
-        router.push('/');
-      } else {
-        console.error('Logout failed');
-        // Still clear token and redirect even if API call fails
-        localStorage.removeItem('token');
-        router.push('/');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Clear token and redirect even on error
-      localStorage.removeItem('token');
-      router.push('/');
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    signOut({ callbackUrl: '/' });
   };
 
   // If Interview History is selected, show the InterviewHistory component

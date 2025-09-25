@@ -5,7 +5,9 @@ import jwt from 'jsonwebtoken';
 export interface IUser extends mongoose.Document {
   fullName: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
+  provider: 'local' | 'google';
   createdAt: Date;
   matchPassword: (enteredPassword: string) => Promise<boolean>;
   getSignedJwtToken: () => string;
@@ -29,9 +31,18 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
+    required: function(this: any) { return this.provider === 'local'; },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
+  },
+  googleId: {
+    type: String,
+    sparse: true
+  },
+  provider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   createdAt: {
     type: Date,
@@ -41,12 +52,12 @@ const UserSchema = new mongoose.Schema({
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') || !this.password) {
     next();
   }
 
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password!, salt);
 });
 
 // Sign JWT and return
@@ -65,6 +76,7 @@ UserSchema.methods.getSignedJwtToken = function() {
 
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function(enteredPassword: string) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
