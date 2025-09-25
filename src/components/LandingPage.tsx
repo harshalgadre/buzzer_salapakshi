@@ -165,7 +165,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-3">99.99% of Accuracy</h3>
               <p className="text-sm opacity-90 leading-relaxed">
-                Our out-of-the-box approach of speech recognition guarantees the world's top quality of response.
+                Our out-of-the-box approach of speech recognition guarantees the world&apos;s top quality of response.
               </p>
             </div>
 
