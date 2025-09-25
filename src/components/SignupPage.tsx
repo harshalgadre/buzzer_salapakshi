@@ -82,14 +82,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Signup Form */}
-      <div className="flex-1 bg-orange-600 flex flex-col justify-center items-center px-12">
+      <div className="flex-1 bg-orange-600 flex flex-col justify-center items-center px-6 md:px-12 py-8 lg:py-0">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <h1 className="text-white text-4xl font-bold mb-2">Buzzer<sup className="text-lg">™</sup></h1>
-            <h2 className="text-white text-2xl font-semibold">Join Us Free!</h2>
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-white text-3xl md:text-4xl font-bold mb-2">Buzzer<sup className="text-lg">™</sup></h1>
+            <h2 className="text-white text-xl md:text-2xl font-semibold">Join Us Free!</h2>
           </div>
 
           {/* Google Signup Button */}
@@ -234,8 +234,34 @@ export default function SignupPage() {
         </div>
       </div>
 
-      {/* Right Side - Referral Section */}
-      <div className="flex-1 bg-slate-700 flex flex-col justify-center items-center px-12 text-white">
+      {/* Mobile Referral Section - Shows below form on mobile */}
+      <div className="lg:hidden bg-slate-700 px-6 py-8 text-white">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Refer a friend,<br />
+            Earn rewards!
+          </h2>
+          
+          <p className="text-orange-400 text-base md:text-lg mb-6 font-medium">
+            Get one month extension for every successful referral.
+          </p>
+          
+          <div className="text-left space-y-3 text-sm md:text-base">
+            <p>
+              Invite your friends to join our platform.
+            </p>
+            <p>
+              When they subscribe to a paid plan&lsquo; you&apos;ll receive one month Standard Plan extension.
+            </p>
+            <p>
+              Share the love and enjoy the benefits together!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Referral Section - Shows as sidebar on desktop */}
+      <div className="hidden lg:flex flex-1 bg-slate-700 flex-col justify-center items-center px-12 text-white">
         <div className="max-w-md text-center">
           <h2 className="text-4xl font-bold mb-6">
             Refer a friend,<br />
