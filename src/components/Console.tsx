@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Console() {
-  const [meetingStarted, setMeetingStarted] = useState(false);
-  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -50,17 +48,17 @@ export default function Console() {
             <div className="space-y-3 text-sm text-gray-300">
               <div className="flex items-start space-x-3">
                 <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
-                <span>Click our Chrome extension icon in the meeting page, before "Ask to Join".</span>
+                <span>Click our Chrome extension icon in the meeting page, before &ldquo;Ask to Join&rdquo;.</span>
               </div>
               
               <div className="flex items-start space-x-3">
                 <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-                <span>Click "Connect" from our extension page.</span>
+                <span>Click &ldquo;Connect&rdquo; from our extension page.</span>
               </div>
               
               <div className="flex items-start space-x-3">
                 <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-                <span>Select "Entire Screen" and click "Share".</span>
+                <span>Select &ldquo;Entire Screen&rdquo; and click &ldquo;Share&rdquo;.</span>
               </div>
               
               <div className="flex items-start space-x-3">
@@ -68,9 +66,11 @@ export default function Console() {
                 <div className="flex flex-col">
                   <span>(🔥NOTE! ) Hide the screen-sharing widget.</span>
                   <div className="mt-2">
-                    <img 
+                    <Image
                       src="/api/placeholder/300/60"
                       alt="Screen sharing widget"
+                      width={300}
+                      height={60}
                       className="border border-orange-500 rounded"
                       style={{backgroundColor: '#1a1a1a', padding: '8px'}}
                     />
@@ -103,7 +103,7 @@ export default function Console() {
               </div>
               <div>
                 <span className="text-orange-400 font-medium">Explain</span>
-                <span className="text-gray-300 ml-2">: Crack "How to modify this code to use Array?"-like sudden questions.</span>
+                <span className="text-gray-300 ml-2">: Crack &ldquo;How to modify this code to use Array?&rdquo;-like sudden questions.</span>
               </div>
             </div>
 
