@@ -15,7 +15,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [status, router]);
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
       setError(''); // Clear any previous errors
       
       const result = await signIn('google', { 
-        callbackUrl: '/dashboard',
+        callbackUrl: '/',
         redirect: true // Let NextAuth handle the redirect
       });
       
@@ -61,8 +61,8 @@ export default function LoginPage() {
         console.log('Login successful:', data);
         // Store token in localStorage (you might want to use a more secure method)
         localStorage.setItem('token', data.token);
-        // Redirect to dashboard
-        router.push('/dashboard');
+        // Redirect to landing page
+        router.push('/');
       } else {
         let errorData;
         try {
