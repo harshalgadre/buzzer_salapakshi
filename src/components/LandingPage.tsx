@@ -1,4 +1,14 @@
+'use client';
+
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export default function LandingPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  const isAuthenticated = status === 'authenticated';
+
   return (
     <div className="min-h-screen bg-orange-600">
       {/* Header */}
@@ -6,15 +16,41 @@ export default function LandingPage() {
         <div className="flex items-center">
           <h1 className="text-white text-2xl md:text-3xl font-bold">Buzzer<sup className="text-sm">™</sup></h1>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <button className="bg-orange-500 hover:bg-orange-400 text-white px-6 py-2 rounded-full font-medium transition-colors">
             Try Demo
           </button>
-          <a href="#" className="text-white hover:text-orange-200 transition-colors font-medium">Dashboard</a>
-          <a href="#" className="text-white hover:text-orange-200 transition-colors font-medium">Console</a>
-          <a href="/login" className="text-white hover:text-orange-200 transition-colors font-medium">Login</a>
+          {isAuthenticated ? (
+            <>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="text-white hover:text-orange-200 transition-colors font-medium"
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => router.push('/console')}
+                className="text-white hover:text-orange-200 transition-colors font-medium"
+              >
+                Console
+              </button>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="text-white hover:text-orange-200 transition-colors font-medium"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => router.push('/login')}
+              className="text-white hover:text-orange-200 transition-colors font-medium"
+            >
+              Login
+            </button>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -82,11 +118,17 @@ export default function LandingPage() {
                 <button className="w-full md:w-auto border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-orange-600 transition-colors font-medium">
                   Chrome Extension
                 </button>
-                <button className="w-full md:w-auto border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-orange-600 transition-colors font-medium">
+                <button
+                  onClick={() => isAuthenticated ? router.push('/console') : router.push('/login')}
+                  className="w-full md:w-auto border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-orange-600 transition-colors font-medium"
+                >
                   Stealth Console
                 </button>
-                <button className="w-full md:w-auto bg-white text-orange-600 px-6 py-3 rounded-lg font-medium hover:bg-orange-50 transition-colors">
-                  Try Demo
+                <button
+                  onClick={() => isAuthenticated ? router.push('/dashboard') : router.push('/login')}
+                  className="w-full md:w-auto bg-white text-orange-600 px-6 py-3 rounded-lg font-medium hover:bg-orange-50 transition-colors"
+                >
+                  {isAuthenticated ? 'Go to Dashboard' : 'Try Demo'}
                 </button>
               </div>
             </div>
@@ -279,9 +321,53 @@ export default function LandingPage() {
               
               <h4 className="font-bold mb-4">Account</h4>
               <ul className="space-y-2 text-sm opacity-75">
-                <li><a href="#" className="hover:opacity-100 transition-opacity">Dashboard</a></li>
-                <li><a href="#" className="hover:opacity-100 transition-opacity">Console</a></li>
-                <li><a href="#" className="hover:opacity-100 transition-opacity">Log Out</a></li>
+                {isAuthenticated ? (
+                  <>
+                    <li>
+                      <button
+                        onClick={() => router.push('/dashboard')}
+                        className="hover:opacity-100 transition-opacity"
+                      >
+                        Dashboard
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => router.push('/console')}
+                        className="hover:opacity-100 transition-opacity"
+                      >
+                        Console
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="hover:opacity-100 transition-opacity"
+                      >
+                        Log Out
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <button
+                        onClick={() => router.push('/login')}
+                        className="hover:opacity-100 transition-opacity"
+                      >
+                        Login
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => router.push('/signup')}
+                        className="hover:opacity-100 transition-opacity"
+                      >
+                        Sign Up
+                      </button>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

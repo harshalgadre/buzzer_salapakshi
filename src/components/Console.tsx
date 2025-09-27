@@ -1,216 +1,203 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function Console() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const router = useRouter();
-
-  const handleGoogleLogin = async () => {
-    try {
-      await signIn('google', { callbackUrl: '/dashboard' });
-    } catch (error) {
-      console.error('Google login error:', error);
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-    
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Login successful:', data);
-        localStorage.setItem('token', data.token);
-        router.push('/dashboard');
-      } else {
-        const errorData = await response.json();
-        if (errorData.message === 'Invalid credentials') {
-          setError('Invalid email or password. Please check your credentials or register if you haven\'t created an account yet.');
-        } else {
-          setError(errorData.message || 'Login failed');
-        }
-        console.error('Login failed:', errorData);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred during login');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleWebsiteLogin = () => {
-    setShowLoginForm(true);
-  };
-
-  const handleSignUp = () => {
-    router.push('/signup');
-  };
 
   return (
-    <div className="min-h-screen bg-white flex">
-      {/* Left side - Console Interface */}
-      <div className="w-1/2 p-8 flex flex-col justify-center">
-        <div className="max-w-sm">
-          {/* Buzzer Logo */}
-          <div className="mb-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
-                <span className="text-white text-xl font-bold">N</span>
-              </div>
-              <span className="text-gray-600 text-sm">4.7.1</span>
-            </div>
-            <h1 className="text-xl font-normal text-gray-800 mt-2">Buzzer</h1>
-          </div>
-
-          {!showLoginForm ? (
-            <>
-              {/* Welcome Section */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Welcome</h2>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  to the world&apos;s leading stealth AI copilot for your online meetings!
-                </p>
-              </div>
-
-              {/* Login Button */}
-              <div className="mb-6">
-                <button 
-                  onClick={handleWebsiteLogin}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-md font-medium transition-colors"
-                >
-                  Login by Website
-                </button>
-              </div>
-
-              {/* Sign up Link */}
-              <div className="text-center">
-                <span className="text-gray-600 text-sm">Do not have an account? </span>
-                <button 
-                  onClick={handleSignUp}
-                  className="text-orange-500 hover:text-orange-600 text-sm font-medium underline"
-                >
-                  Sign up
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Login Form */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Login</h2>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Sign in to your account to continue
-                </p>
-              </div>
-
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
-
-              <form onSubmit={handleLogin} className="space-y-4 mb-6">
-                <div>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <div>
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white py-3 px-4 rounded-md font-medium transition-colors"
-                >
-                  {isLoading ? 'Logging in...' : 'Login'}
-                </button>
-              </form>
-
-              {/* Google Login Button */}
-              <div className="mb-6">
-                <button
-                  onClick={handleGoogleLogin}
-                  className="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>Continue with Google</span>
-                </button>
-              </div>
-
-              {/* Back to Welcome */}
-              <div className="text-center">
-                <button 
-                  onClick={() => setShowLoginForm(false)}
-                  className="text-gray-600 hover:text-gray-800 text-sm underline"
-                >
-                  ← Back to Welcome
-                </button>
-              </div>
-
-              {/* Sign up Link */}
-              <div className="text-center mt-4">
-                <span className="text-gray-600 text-sm">Do not have an account? </span>
-                <button 
-                  onClick={handleSignUp}
-                  className="text-orange-500 hover:text-orange-600 text-sm font-medium underline"
-                >
-                  Sign up
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <div className="bg-red-600 px-4 py-2 text-center text-sm">
+        You should login Ntro.io first.
+        <span className="float-right space-x-4">
+          <button className="underline hover:no-underline">Log In</button>
+          <button className="underline hover:no-underline">Sign Up</button>
+        </span>
       </div>
 
-      {/* Right side - Image */}
-      <div className="w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100"></div>
-        <div className="relative h-full flex items-center justify-center p-8">
-          {/* Professional woman image placeholder */}
-          <div className="relative">
-            <div className="w-80 h-96 bg-gradient-to-b from-gray-200 to-gray-300 rounded-lg shadow-lg flex items-end justify-center overflow-hidden">
-              {/* Office background elements */}
-              <div className="absolute top-8 left-8 w-12 h-16 bg-gray-400 opacity-30 rounded"></div>
-              <div className="absolute top-12 right-12 w-8 h-12 bg-gray-400 opacity-20 rounded"></div>
-              <div className="absolute top-20 left-16 w-6 h-8 bg-gray-400 opacity-25 rounded"></div>
-              
-              {/* Person silhouette */}
-              <div className="w-48 h-64 bg-gray-600 rounded-t-full opacity-60 mb-0"></div>
+      {/* Main Content */}
+      <div className="flex">
+        {/* Left Content */}
+        <div className="flex-1 p-8">
+          {/* Logo */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">🍯</span>
+              </div>
+              <h1 className="text-2xl font-bold text-orange-500">Stealth Console</h1>
             </div>
+          </div>
+
+          {/* Status */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-2 text-lg">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <span className="font-medium">Started meeting :</span>
+              <span className="text-gray-300">No started interview.</span>
+            </div>
+          </div>
+
+          {/* How to connect section */}
+          <div className="mb-8">
+            <h2 className="text-lg font-medium mb-4 flex items-center">
+              🚀 How to connect the meeting?
+            </h2>
             
-            {/* Orange badge */}
-            <div className="absolute bottom-16 right-8 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-white text-xl font-bold">N</span>
+            <div className="space-y-3 text-sm text-gray-300">
+              <div className="flex items-start space-x-3">
+                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                <span>Click our Chrome extension icon in the meeting page, before &ldquo;Ask to Join&rdquo;.</span>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                <span>Click &ldquo;Connect&rdquo; from our extension page.</span>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                <span>Select &ldquo;Entire Screen&rdquo; and click &ldquo;Share&rdquo;.</span>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <span className="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+                <div className="flex flex-col">
+                  <span>(🔥NOTE! ) Hide the screen-sharing widget.</span>
+                  <div className="mt-2">
+                    <Image
+                      src="/api/placeholder/300/60"
+                      alt="Screen sharing widget"
+                      width={300}
+                      height={60}
+                      className="border border-orange-500 rounded"
+                      style={{backgroundColor: '#1a1a1a', padding: '8px'}}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+                <span>Now ready to go. Ask to join!</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Command Options */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
+              <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
+                <span className="text-white text-sm font-bold">⚡</span>
+              </div>
+              <div>
+                <span className="text-orange-400 font-medium">Code</span>
+                <span className="text-gray-300 ml-2">: Get the best code solution.</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
+              <div className="w-8 h-8 bg-orange-400 rounded flex items-center justify-center">
+                <span className="text-white text-sm font-bold">💬</span>
+              </div>
+              <div>
+                <span className="text-orange-400 font-medium">Explain</span>
+                <span className="text-gray-300 ml-2">: Crack &ldquo;How to modify this code to use Array?&rdquo;-like sudden questions.</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
+              <div className="w-8 h-8 bg-orange-400 rounded flex items-center justify-center">
+                <span className="text-white text-sm font-bold">❓</span>
+              </div>
+              <div>
+                <span className="text-orange-400 font-medium">Help Me</span>
+                <span className="text-gray-300 ml-2">: Trigger AI hint to crush tricky interview question.</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
+              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                <span className="text-white text-sm font-bold">📱</span>
+              </div>
+              <div>
+                <span className="text-blue-400 font-medium">Screen</span>
+                <span className="text-gray-300 ml-2">: Shoot one by one, for over-single-screen or multi-file code task.</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Shortcut Keys */}
+          <div className="mt-8">
+            <p className="text-sm text-gray-400">
+              + Shortcut Keys are remotely available even in the coding page.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="w-20 bg-gray-800 flex flex-col items-center py-8">
+          {/* Top Tools Section */}
+          <div className="flex flex-col space-y-12 mb-auto">
+            {/* Bullet Section */}
+            <div className="flex flex-col items-center space-y-3">
+              <div className="flex flex-col space-y-1">
+                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+              </div>
+              <span className="text-xs text-gray-400 font-medium">Bullet</span>
+            </div>
+
+            {/* Detail Section */}
+            <div className="flex flex-col items-center space-y-3">
+              <div className="w-12 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+                <div className="flex flex-col space-y-1">
+                  <div className="w-6 h-1 bg-gray-400 rounded"></div>
+                  <div className="w-4 h-1 bg-gray-400 rounded"></div>
+                </div>
+              </div>
+              <span className="text-xs text-gray-400 font-medium">Detail</span>
+            </div>
+
+            {/* Transcript Section */}
+            <div className="flex flex-col items-center space-y-3">
+              <div className="w-12 h-10 bg-gray-600 rounded-lg flex items-center justify-center relative">
+                <div className="flex flex-col space-y-1">
+                  <div className="w-6 h-1 bg-gray-400 rounded"></div>
+                  <div className="w-4 h-1 bg-gray-400 rounded"></div>
+                  <div className="w-5 h-1 bg-gray-400 rounded"></div>
+                </div>
+                <div className="absolute -right-1 -top-1 w-4 h-6 bg-gray-500 rounded-sm flex items-center justify-center">
+                  <div className="w-2 h-3 bg-gray-400 rounded-full"></div>
+                </div>
+              </div>
+              <span className="text-xs text-gray-400 font-medium">Transcript</span>
+            </div>
+          </div>
+
+          {/* Action Buttons Section */}
+          <div className="flex flex-col space-y-4 mt-12">
+            {/* Code Button */}
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
+              <div className="text-white text-lg font-bold mb-1">{'</>'}</div>
+              <div className="text-white text-xs font-medium">Code</div>
+              <div className="text-yellow-200 text-xs">Cmd + .</div>
+            </div>
+
+            {/* Explain Button */}
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
+              <div className="text-white text-lg font-bold mb-1">💬</div>
+              <div className="text-white text-xs font-medium">Explain</div>
+              <div className="text-yellow-200 text-xs">Cmd + ,</div>
+            </div>
+
+            {/* Screen Button */}
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
+              <div className="text-white text-lg font-bold mb-1">📷</div>
+              <div className="text-white text-xs font-medium">Screen</div>
+              <div className="text-blue-200 text-xs">Cmd+Insert</div>
             </div>
           </div>
         </div>
