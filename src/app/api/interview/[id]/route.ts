@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
     
     // Check if user owns the interview
-    if (interview.user.toString() !== user._id.toString()) {
+    if (interview.userId !== user._id.toString()) {
       return NextResponse.json(
         { success: false, message: 'Not authorized to access this interview' },
         { status: 401 }
@@ -80,7 +80,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     }
     
     // Check if user owns the interview
-    if (interview.user.toString() !== user._id.toString()) {
+    if (interview.userId !== user._id.toString()) {
       return NextResponse.json(
         { success: false, message: 'Not authorized to update this interview' },
         { status: 401 }
@@ -134,7 +134,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
     
     // Check if user owns the interview
-    if (interview.user.toString() !== user._id.toString()) {
+    if (interview.userId !== user._id.toString()) {
       return NextResponse.json(
         { success: false, message: 'Not authorized to delete this interview' },
         { status: 401 }

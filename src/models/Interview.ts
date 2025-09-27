@@ -1,72 +1,72 @@
 import mongoose from 'mongoose';
 
 export interface IInterview extends mongoose.Document {
-  user: mongoose.Schema.Types.ObjectId;
+  userId: string;
   scenario: string;
-  meetingLink: string;
+  meetingUrl: string;
+  isDesktopCall: boolean;
+  liveCoding: boolean;
+  aiInterview: boolean;
   position: string;
   company: string;
-  language: string;
-  status: string;
-  scheduledTime: Date;
-  performance: {
-    rating: string;
-    feedback: string;
-  };
+  meetingLanguage: string;
+  translationLanguage: string;
+  resume: string;
   createdAt: Date;
+  __v: number;
 }
 
 const InterviewSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  userId: {
+    type: String,
     required: true
   },
   scenario: {
     type: String,
-    required: [true, 'Please specify the interview scenario'],
-    enum: ['Job Interview', 'Coding Interview', 'Technical Interview', 'Behavioral Interview', 'Other']
+    required: true
   },
-  meetingLink: {
+  meetingUrl: {
     type: String,
-    required: [true, 'Please provide the meeting link']
+    required: true
+  },
+  isDesktopCall: {
+    type: Boolean,
+    default: false
+  },
+  liveCoding: {
+    type: Boolean,
+    default: false
+  },
+  aiInterview: {
+    type: Boolean,
+    default: false
   },
   position: {
     type: String,
-    required: [true, 'Please specify the position']
+    required: true
   },
   company: {
     type: String,
-    required: [true, 'Please specify the company']
+    required: true
   },
-  language: {
+  meetingLanguage: {
     type: String,
-    default: 'English'
+    default: 'english'
   },
-  status: {
+  translationLanguage: {
     type: String,
-    enum: ['Scheduled', 'Completed', 'Cancelled'],
-    default: 'Scheduled'
+    default: 'english'
   },
-  scheduledTime: {
-    type: Date,
-    required: [true, 'Please specify the interview time']
-  },
-  performance: {
-    rating: {
-      type: String,
-      enum: ['EXCELLENT', 'GOOD', 'AVERAGE', 'POOR', 'WORST'],
-      default: null
-    },
-    feedback: {
-      type: String,
-      default: ''
-    }
+  resume: {
+    type: String,
+    default: ''
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
+}, {
+  collection: 'interviewsessions' // match actual MongoDB collection name
 });
 
 export default mongoose.models.Interview || mongoose.model<IInterview>('Interview', InterviewSchema);

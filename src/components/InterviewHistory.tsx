@@ -1,6 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface Interview {
+  _id: string;
+  userId: string;
+  scenario: string;
+  meetingUrl: string;
+  isDesktopCall: boolean;
+  liveCoding: boolean;
+  aiInterview: boolean;
+  position: string;
+  company: string;
+  meetingLanguage: string;
+  translationLanguage: string;
+  resume: string;
+  createdAt: string;
+  __v: number;
+}
 
 interface InterviewHistoryProps {
   onNavigateToProfile?: () => void;
@@ -8,21 +25,94 @@ interface InterviewHistoryProps {
 
 export default function InterviewHistory({ onNavigateToProfile }: InterviewHistoryProps) {
   const [scenario, setScenario] = useState('');
-  const [fromDate, setFromDate] = useState('2025-09-24');
-  const [toDate, setToDate] = useState('2025-09-24');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [keyword, setKeyword] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [filteredInterviews, setFilteredInterviews] = useState<Interview[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInterviews = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetch('/api/interview', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error('Failed to load interviews');
+          return;
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          setInterviews(result.data);
+          setFilteredInterviews(result.data);
+        }
+      } catch (error) {
+        console.error('Error loading interviews:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInterviews();
+  }, []);
 
   const handleSearch = () => {
-    // TODO: Implement search functionality
-    console.log('Searching with filters:', { scenario, fromDate, toDate, keyword });
+    let filtered = [...interviews];
+
+    if (scenario) {
+      filtered = filtered.filter(interview => 
+        interview.scenario.toLowerCase().includes(scenario.toLowerCase())
+      );
+    }
+
+    if (fromDate) {
+      const from = new Date(fromDate);
+      from.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(interview => 
+        new Date(interview.createdAt) >= from
+      );
+    }
+
+    if (toDate) {
+      const to = new Date(toDate);
+      to.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(interview => 
+        new Date(interview.createdAt) <= to
+      );
+    }
+
+    if (keyword) {
+      const k = keyword.toLowerCase();
+      filtered = filtered.filter(interview => 
+        interview.position.toLowerCase().includes(k) ||
+        interview.company.toLowerCase().includes(k) ||
+        interview.scenario.toLowerCase().includes(k)
+      );
+    }
+
+    setFilteredInterviews(filtered);
   };
 
   const handleClear = () => {
     setScenario('');
-    setFromDate('2025-09-24');
-    setToDate('2025-09-24');
+    setFromDate('');
+    setToDate('');
     setKeyword('');
+    setFilteredInterviews(interviews);
   };
 
   return (
@@ -208,7 +298,7 @@ export default function InterviewHistory({ onNavigateToProfile }: InterviewHisto
             <div className="bg-gray-100 px-4 md:px-6 py-3 border-b">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Searched Result:</span>
-                <span className="text-lg font-semibold text-orange-600">0</span>
+                <span className="text-lg font-semibold text-orange-600">{filteredInterviews.length}</span>
               </div>
             </div>
 
@@ -229,16 +319,46 @@ export default function InterviewHistory({ onNavigateToProfile }: InterviewHisto
               </div>
             </div>
 
-            {/* Empty State */}
-            <div className="px-4 md:px-6 py-8 md:py-12 text-center text-gray-500">
-              <div className="mb-4">
-                <svg className="w-12 md:w-16 h-12 md:h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+            {/* Table Body */}
+            {loading ? (
+              <div className="px-4 md:px-6 py-8 text-center text-gray-500">
+                Loading interviews...
               </div>
-              <p className="text-base md:text-lg font-medium mb-2">No interview history found</p>
-              <p className="text-sm">Start scheduling interviews to see your history here.</p>
-            </div>
+            ) : filteredInterviews.length === 0 ? (
+              <div className="px-4 md:px-6 py-8 md:py-12 text-center text-gray-500">
+                <div className="mb-4">
+                  <svg className="w-12 md:w-16 h-12 md:h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <p className="text-base md:text-lg font-medium mb-2">No interview history found</p>
+                <p className="text-sm">Start scheduling interviews to see your history here.</p>
+              </div>
+            ) : (
+              <div className="hidden md:block">
+                {filteredInterviews.map((interview, index) => (
+                  <div key={interview._id} className="grid grid-cols-7 gap-4 px-6 py-3 border-b border-gray-200 text-sm hover:bg-gray-50">
+                    <div>{index + 1}</div>
+                    <div>{new Date(interview.createdAt).toLocaleString()}</div>
+                    <div>{interview.scenario}</div>
+                    <div>{interview.company}</div>
+                    <div>{interview.position}</div>
+                    <div>Scheduled</div>
+                    <div className="text-center">
+                      <button
+                        onClick={() => window.open(interview.meetingUrl, '_blank')}
+                        className="text-orange-600 hover:text-orange-800 p-1"
+                        title="Open Meeting"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </main>
       </div>

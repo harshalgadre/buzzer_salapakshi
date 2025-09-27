@@ -30,6 +30,8 @@ if (!globalWithCache.mongooseCache) {
 
 async function dbConnect() {
   if (cached.conn) {
+    // Debug: print current database name
+    console.log('MongoDB already connected to:', cached.conn.connection.name);
     return cached.conn;
   }
 
@@ -39,6 +41,8 @@ async function dbConnect() {
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      // Debug: print database name after connection
+      console.log('MongoDB connected to:', mongoose.connection.name);
       return mongoose;
     });
   }
