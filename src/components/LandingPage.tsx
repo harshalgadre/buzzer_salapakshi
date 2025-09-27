@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-
+import Image from "next/image";
 export default function LandingPage() {
   const { status } = useSession();
   const router = useRouter();
@@ -10,7 +10,7 @@ export default function LandingPage() {
   const isAuthenticated = status === 'authenticated';
 
   return (
-    <div className="min-h-screen bg-orange-600">
+    <div className="min-h-screen bg-[#cb4b0b]">
       {/* Header */}
       <header className="flex justify-between items-center px-4 md:px-12 py-6">
         <div className="flex items-center">
@@ -19,7 +19,7 @@ export default function LandingPage() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <button className="bg-orange-500 hover:bg-orange-400 text-white px-6 py-2 rounded-full font-medium transition-colors">
+          <button className="bg-[#cb4b0b] hover:bg-orange-400 text-white px-6 py-2 rounded-full font-medium transition-colors">
             Try Demo
           </button>
           {isAuthenticated ? (
@@ -67,49 +67,50 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             {/* Left Column - Text Content */}
             <div className="text-white pt-4 md:pt-8 text-center lg:text-left">
-              <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-8 md:mb-12 leading-tight text-yellow-100">
-                Free Online Meeting<br />
-                Copilot for Job Interviews<br />
-                & All
+              <h2 className="text-3xl md:text-4xl lg:text-5xl  mb-8 md:mb-12 leading-tight text-[#f7fa8e]"
+                  style={{ fontFamily: 'Arial, "Helvetica Neue", Helvetica, sans-serif' }}>
+                  Free Online Meeting<br />
+                  Copilot for Job Interviews<br />
+                  & All
               </h2>
-              
+
               {/* Feature List */}
               <div className="space-y-3 md:space-y-4 mb-8 md:mb-12 text-sm md:text-lg text-left">
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Job Seekers</strong> in Interviews & Live Coding Challenges</span>
+                  
+                  <span><strong>🧑 Job Seekers</strong> in Interviews & Live Coding Challenges</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-green-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>HR Managers</strong> & Talent Acquisition Specialists</span>
+                  
+                  <span><strong>🔍 HR Managers</strong> & Talent Acquisition Specialists</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-red-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Remote Employees</strong> in Team Meetings</span>
+                 
+                  <span><strong>🏡 Remote Employees</strong> in Team Meetings</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-purple-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Consultants</strong> in Phone & Online Meetings</span>
+                  
+                  <span><strong>📝 Consultants</strong> in Phone & Online Meetings</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Customer Supports</strong> & Sales Reps</span>
+                 
+                  <span><strong>🎧 Customer Supports</strong> & Sales Reps</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-orange-300 rounded-full flex-shrink-0"></div>
-                  <span><strong>Freelancers & Entrepreneurs</strong> in Client Interviews</span>
+                  
+                  <span><strong>🤝 Freelancers & Entrepreneurs</strong> in Client Interviews</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-indigo-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Job Candidates & Students</strong> in Online Assessments</span>
+                 
+                  <span><strong>🎓 Job Candidates & Students</strong> in Online Assessments</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-teal-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Non-native Speakers</strong> with Language Barriers</span>
+                 
+                  <span><strong>🌍 Non-native Speakers</strong> with Language Barriers</span>
                 </div>
                 <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-3 h-3 bg-pink-400 rounded-full flex-shrink-0"></div>
-                  <span><strong>Small Talkers</strong> for Friendly Chat</span>
+                  
+                  <span><strong>☕ Small Talkers</strong> for Friendly Chat</span>
                 </div>
               </div>
 
@@ -132,89 +133,39 @@ export default function LandingPage() {
                 </button>
               </div>
             </div>
-
             {/* Right Column - Video/Image */}
             <div className="relative lg:pl-8 pt-8 lg:pt-16 order-first lg:order-last">
-              <div className="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
-                <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900">
-                  {/* Video Content Area */}
-                  <div className="absolute inset-4 bg-gray-800 rounded-lg overflow-hidden">
-                    {/* Mock person in video call */}
-                    <div className="relative w-full h-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center">
-                      {/* Play button overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg hover:bg-red-700 transition-colors cursor-pointer">
-                          <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
-                        </div>
-                      </div>
-                      
-                      {/* Mock chat/hint overlay */}
-                      <div className="absolute top-4 right-4 bg-black bg-opacity-80 text-white text-xs px-3 py-2 rounded-lg max-w-xs">
-                        <div className="mb-1 text-orange-400 font-semibold">Transformation</div>
-                        <div className="text-xs leading-tight">
-                          What is the difference between JavaScript not in corresponding topic directly
-                        </div>
-                      </div>
-
-                      {/* Mock question overlay */}
-                      <div className="absolute bottom-4 left-4 bg-black bg-opacity-80 text-white text-xs px-3 py-2 rounded-lg max-w-sm">
-                        <div className="mb-1 text-red-400 font-semibold">Could we be differentiated JavaScript from Java in development?</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Video controls */}
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                    <div className="flex space-x-2">
-                      <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>
-                      </div>
-                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                      </div>
-                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-                        </svg>
-                      </div>
-                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <div className="text-white text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
-                        jen-goes-ntro
-                      </div>
-                      <div className="w-10 h-10 bg-gray-600 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
+              <div className="shadow-2xl overflow-hidden">
+                <video
+                  src="https://ntro-interview.github.io/assets/videos/Ntro-Gif.webm"
+                  autoPlay
+                  loop
+                  muted
+                  className="w-full h-auto object-cover [clip-path:inset(0_7%)]"
+                />
               </div>
             </div>
           </div>
+          
         </div>
       </main>
-
+          
       {/* Features Section */}
-      <section className="px-4 md:px-12 py-12 md:py-16 bg-orange-500">
+      <section className="px-4 md:px-12 py-12 md:py-16 bg-[#cb4b0b]">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {/* Feature 1 */}
             <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+              <div className="w-16 h-16  bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Image
+                      src="https://cdn.prod.website-files.com/66c62ca3eae685b96562fa3f/66c62ca3eae685b96562fb9e_school.svg"
+                      alt="icon"
+                      width={64}
+                      height={64}
+                      className="icon-image"
+                    />
               </div>
-              <h3 className="text-lg md:text-xl font-bold mb-3">99.99% of Accuracy</h3>
+              <h3 className="text-lg  text-[#f7fa8e] md:text-xl font-bold mb-3">99.99% of Accuracy</h3>
               <p className="text-xs md:text-sm opacity-90 leading-relaxed">
                 Our out-of-the-box approach of speech recognition guarantees the world&apos;s top quality of response.
               </p>
@@ -222,12 +173,16 @@ export default function LandingPage() {
 
             {/* Feature 2 */}
             <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
+              <div className="w-16 h-16  bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Image
+                      src="https://cdn.prod.website-files.com/66c62ca3eae685b96562fa3f/66c62ca3eae685b96562fbb0_view_in_ar.svg"
+                      alt="icon"
+                      width={64}
+                      height={64}
+                      className="icon-image"
+                    />
               </div>
-              <h3 className="text-lg md:text-xl font-bold mb-3">Literally Instant Hint</h3>
+              <h3 className="text-lg  text-[#f7fa8e] md:text-xl font-bold mb-3">Literally Instant Hint</h3>
               <p className="text-xs md:text-sm opacity-90 leading-relaxed">
                 No need to wait for AI with awkward silence. It responds right when you should speak.
               </p>
@@ -235,12 +190,16 @@ export default function LandingPage() {
 
             {/* Feature 3 */}
             <div className="text-center text-white">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+              <div className="w-16 h-16  bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Image
+                      src="https://cdn.prod.website-files.com/66c62ca3eae685b96562fa3f/66c62ca3eae685b96562fbaf_sentiment_satisfied.svg"
+                      alt="icon"
+                      width={64}
+                      height={64}
+                      className="icon-image"
+                    />
               </div>
-              <h3 className="text-lg md:text-xl font-bold mb-3">Shocked Pricing</h3>
+              <h3 className="text-lg  text-[#f7fa8e] md:text-xl font-bold mb-3">Shocked Pricing</h3>
               <p className="text-xs md:text-sm opacity-90 leading-relaxed">
                 Unlike others, we have the most generous forever-free plan. Your success is our win!
               </p>
@@ -248,9 +207,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
+          
       {/* Footer */}
-      <footer className="bg-orange-700 px-4 md:px-12 py-8 md:py-12">
+      <footer className="bg-[#cb4b0b] px-4 md:px-12 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
             {/* Brand */}
@@ -281,31 +240,31 @@ export default function LandingPage() {
               <h4 className="font-bold mb-4">Follow Us</h4>
               <ul className="space-y-2 text-sm opacity-75">
                 <li className="flex items-center space-x-2">
-                  <span>📘</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">Facebook</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>💼</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">LinkedIn</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>🐦</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">X</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>📺</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">YouTube</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>📷</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">Instagram</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>🎮</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">TikTok</a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <span>💬</span>
+                  <span></span>
                   <a href="#" className="hover:opacity-100 transition-opacity">Discord</a>
                 </li>
               </ul>
