@@ -93,7 +93,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Login Form */}
-      <div className="flex-1 bg-orange-600 flex flex-col justify-center items-center px-6 md:px-12 py-8 lg:py-0">
+      <div className="flex-1 bg-[#cb4b0b] flex flex-col justify-center items-center px-6 md:px-12 py-8 lg:py-0">
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8 md:mb-12">
