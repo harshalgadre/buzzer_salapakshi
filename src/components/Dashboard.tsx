@@ -200,7 +200,7 @@ export default function Dashboard() {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="absolute top-0 left-0 right-0 bg-orange-600 text-white p-4">
+          <div className="absolute top-0 left-0 right-0 bg-[#cb4b0b] text-white p-4">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-xl font-bold">Buzzer™</h1>
               <button
@@ -231,7 +231,7 @@ export default function Dashboard() {
       )}
 
       {/* Header */}
-      <header className="bg-orange-600 text-white px-4 md:px-6 py-4">
+      <header className="bg-[#cb4b0b] text-white px-4 md:px-6 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4 md:space-x-8">
             <h1 className="text-xl md:text-2xl font-bold">Buzzer™</h1>
@@ -272,7 +272,7 @@ export default function Dashboard() {
             <button
               className={`flex-1 px-4 py-3 text-sm font-medium ${
                 activeTab === 'profile' 
-                  ? 'bg-orange-600 text-white' 
+                  ? 'bg-[#cb4b0b] text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
               onClick={() => setActiveTab('profile')}
@@ -282,7 +282,7 @@ export default function Dashboard() {
             <button
               className={`flex-1 px-4 py-3 text-sm font-medium ${
                 activeTab === 'interview-history' 
-                  ? 'bg-orange-600 text-white' 
+                  ? 'bg-[#cb4b0b] text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
               onClick={() => setActiveTab('interview-history')}
@@ -299,7 +299,7 @@ export default function Dashboard() {
               <div 
                 className={`px-3 py-2 rounded text-sm font-medium cursor-pointer ${
                   activeTab === 'profile' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-[#cb4b0b] text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 onClick={() => setActiveTab('profile')}
@@ -309,7 +309,7 @@ export default function Dashboard() {
               <div 
                 className={`px-3 py-2 rounded text-sm cursor-pointer ${
                   activeTab === 'interview-history' 
-                    ? 'bg-orange-600 text-white font-medium' 
+                    ? 'bg-[#cb4b0b] text-white font-medium' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 onClick={() => setActiveTab('interview-history')}
@@ -342,7 +342,7 @@ export default function Dashboard() {
               />
               <button
                 onClick={handleNameSave}
-                className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto"
+                className="bg-[#cb4b0b] text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto"
               >
                 SAVE
               </button>
@@ -435,7 +435,7 @@ export default function Dashboard() {
                 <button
                   onClick={handlePasswordUpdate}
                   disabled={passwordLoading}
-                  className="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="bg-[#cb4b0b] text-white px-6 py-2 rounded hover:bg-orange-700 transition-colors w-full md:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {passwordLoading ? (
                     <>
