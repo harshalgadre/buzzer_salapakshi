@@ -1,0 +1,8 @@
+- [ ] Add useState for interviews and filteredInterviews
+- [ ] Add useEffect to fetch interviews from /api/interview on mount
+- [ ] Implement handleSearch to filter interviews based on scenario, fromDate, toDate, keyword
+- [ ] Update results count to show filteredInterviews.length
+- [ ] Add table rows to display filtered interviews in the grid
+- [ ] Handle empty state when no interviews or no filtered results
+- [ ] Adjust default dates to empty strings and update handleClear
+- [ ] Test the component functionality
