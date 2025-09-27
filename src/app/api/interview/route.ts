@@ -55,12 +55,16 @@ export async function GET(req: NextRequest) {
     }
     
     await dbConnect();
-    
+
     // Get all interviews for logged in user using native MongoDB driver
     const userId = user._id.toString();
     console.log('User ID:', userId, 'Length:', userId.length);
     const mongoose = (await import('mongoose')).default;
     const db = mongoose.connection.db;
+
+    if (!db) {
+      throw new Error('Database connection failed');
+    }
     // Get all interviews for debugging
     const allInterviews = await db.collection('interviewsessions').find({}).toArray();
     allInterviews.forEach((doc, idx) => {
