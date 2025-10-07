@@ -21,16 +21,16 @@ const Nav = () => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link href="#demo" className="hover:text-blue-600">
+          <Link href="#demo" className="hover:text-orange-200">
             Demo
           </Link>
-          <Link href="#pricing" className="hover:text-blue-600">
+          <Link href="#pricing" className="hover:text-orange-200">
             Pricing
           </Link>
-          <Link href="/console" className="hover:text-blue-600">
+          <Link href="/console" className="hover:text-orange-200">
             Console
           </Link>
-          <Link href="#faq" className="hover:text-blue-600">
+          <Link href="#faq" className="hover:text-orange-200">
             FAQ
           </Link>
           <button className="bg-white text-[#ff751f] px-5 py-2 rounded-full font-semibold transition hover:bg-orange-100">
