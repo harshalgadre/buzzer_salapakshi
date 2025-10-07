@@ -66,8 +66,8 @@ export default function SignupPage() {
         console.log('Signup successful:', data);
         // Store token in localStorage
         localStorage.setItem('token', data.token);
-        // Redirect to landing page
-        router.push('/');
+        // Redirect to dashboard
+        router.push('/dashboard');
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Signup failed');
