@@ -1,206 +1,215 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { GoogleGenAI } from '@google/genai';
+import { ConsoleSettings } from './ConsoleSetup';
+import {
+  CodeBracketIcon,
+  ChatBubbleBottomCenterTextIcon,
+  SparklesIcon,
+  ComputerDesktopIcon,
+  DocumentTextIcon,
+  ArrowLeftIcon,
+  StealthLogoIcon,
+  RocketLaunchIcon,
+  FireIcon,
+} from './icons/icon';
 
-export default function Console() {
+// Speech Recognition Types
+interface SpeechRecognitionResult { isFinal: boolean; [key: number]: { transcript: string } }
+interface SpeechRecognitionEvent { results: SpeechRecognitionResult[]; resultIndex: number; }
+interface SpeechRecognitionErrorEvent { error: string; }
+interface SpeechRecognition {
+  continuous: boolean; interimResults: boolean;
+  onstart: () => void; onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void; onend: () => void;
+  start: () => void; stop: () => void;
+}
+
+interface SidebarButtonProps {
+  icon: React.ReactNode; label: string; shortcut: string;
+  isPrimary?: boolean; onClick?: () => void; isActive?: boolean;
+}
+
+const SidebarButton: React.FC<SidebarButtonProps> = ({ icon, label, shortcut, isPrimary = false, onClick, isActive }) => (
+  <button onClick={onClick} className={`w-full flex flex-col items-center p-2 rounded-lg transition-colors ${isActive ? 'bg-orange-700' : (isPrimary ? 'bg-blue-600 hover:bg-blue-700' : 'bg-buzzer-orange hover:bg-orange-600')} text-white`}>
+    {icon}
+    <span className="text-xs font-semibold mt-1">{label}</span>
+    <span className="text-[10px] opacity-70">{shortcut}</span>
+  </button>
+);
+
+interface StealthConsoleProps {
+  settings: ConsoleSettings | null;
+  onClose: () => void;
+}
+
+const StealthConsole: React.FC<StealthConsoleProps> = ({ settings, onClose }) => {
+    const [transcript, setTranscript] = useState('');
+    const [micStatus, setMicStatus] = useState('Initializing...');
+    const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+    const [response, setResponse] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [activeAction, setActiveAction] = useState<string | null>(null);
+
+    const ai = useMemo(() => new GoogleGenAI({ apiKey: process.env.API_KEY! }), []);
+
+    // Speech Recognition Setup
+    useEffect(() => {
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setMicStatus('Speech recognition not supported.');
+            return;
+        }
+
+        setMicStatus('Waiting for mic permission...');
+        const recognition: SpeechRecognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognitionRef.current = recognition;
+
+        let finalTranscript = '';
+        recognition.onstart = () => setMicStatus('Listening...');
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript + '. ';
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            setTranscript(finalTranscript + interimTranscript);
+        };
+        recognition.onerror = (event) => {
+            if (event.error === 'no-speech') setMicStatus('No speech detected. Restarting...');
+            else if (event.error === 'not-allowed') {
+                setMicStatus('Microphone access denied. Enable in browser settings.');
+                recognitionRef.current?.stop();
+            } else setMicStatus(`Error: ${event.error}`);
+        };
+        recognition.onend = () => {
+            if (!micStatus.startsWith('Microphone access denied')) {
+                try { recognition.start(); } catch (e) { /* ignore */ }
+            }
+        };
+        try { recognition.start(); } catch(e) { /* ignore */ }
+
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.onend = null;
+                recognitionRef.current.stop();
+            }
+        };
+    }, [micStatus]);
+
+    const handleGeminiRequest = async (promptPrefix: string, contextText: string) => {
+        setIsLoading(true);
+        setResponse('');
+
+        const context = `My name is ${settings?.userName}. I am interviewing at ${settings?.company} for a role focused on ${settings?.primaryTechnology}. Job Description: ${settings?.jobDescription}. My resume summary: ${settings?.resume}.`;
+        const fullPrompt = `${promptPrefix}\n\nCONTEXT:\n${context}\n\nTRANSCRIPT / TEXT:\n"${contextText}"`;
+
+        try {
+            const result = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: fullPrompt });
+            setResponse(result.text);
+        } catch (e) {
+            setResponse(`Error: ${(e as Error).message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const getLastSentence = () => {
+        return transcript.split('. ').filter(s => s.trim().length > 0).pop() || '';
+    }
+
+    const handleActionClick = (action: string) => {
+        setActiveAction(action);
+        const lastSentence = getLastSentence();
+        if (!lastSentence) {
+            setResponse("Please speak first to provide context.");
+            return;
+        }
+        
+        let prefix = "";
+        switch(action) {
+            case "Code":
+                prefix = "Based on the following, provide a relevant code snippet:";
+                break;
+            case "Explain":
+                 prefix = "Explain the following concept in simple terms:";
+                 break;
+            default:
+                 return;
+        }
+        handleGeminiRequest(prefix, lastSentence);
+    }
+    
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (activeAction === 'Help Me' && (e.key === ' ' || e.key === 'Enter')) {
+                e.preventDefault();
+                const lastSentence = getLastSentence();
+                if (lastSentence) {
+                    handleGeminiRequest("Provide a helpful hint or answer based on this question:", lastSentence);
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeAction, transcript]);
+
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="bg-red-600 px-4 py-2 text-center text-sm">
-        You should login Ntro.io first.
-        <span className="float-right space-x-4">
-          <button className="underline hover:no-underline">Log In</button>
-          <button className="underline hover:no-underline">Sign Up</button>
-        </span>
-      </div>
+    <div className="h-full w-full flex flex-col p-4 bg-[#2d2d2d] text-gray-300">
+      <header className="flex justify-between items-center flex-shrink-0 mb-4">
+        <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-full">
+          <ArrowLeftIcon />
+        </button>
+        <div className="flex items-center gap-3">
+          <StealthLogoIcon />
+          <h1 className="text-2xl font-bold text-buzzer-orange">Stealth Console</h1>
+        </div>
+        <div className="w-10"></div>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex">
-        {/* Left Content */}
-        <div className="flex-1 p-8">
-          {/* Logo */}
-          <div className="flex items-center justify-center mb-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">🍯</span>
-              </div>
-              <h1 className="text-2xl font-bold text-orange-500">Stealth Console</h1>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div className="mb-8">
-            <div className="flex items-center space-x-2 text-lg">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="font-medium">Started meeting :</span>
-              <span className="text-gray-300">No started interview.</span>
-            </div>
-          </div>
-
-          {/* How to connect section */}
-          <div className="mb-8">
-            <h2 className="text-lg font-medium mb-4 flex items-center">
-              🚀 How to connect the meeting?
-            </h2>
-            
-            <div className="space-y-3 text-sm text-gray-300">
-              <div className="flex items-start space-x-3">
-                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
-                <span>Click our Chrome extension icon in the meeting page, before &ldquo;Ask to Join&rdquo;.</span>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-                <span>Click &ldquo;Connect&rdquo; from our extension page.</span>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-                <span>Select &ldquo;Entire Screen&rdquo; and click &ldquo;Share&rdquo;.</span>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <span className="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
-                <div className="flex flex-col">
-                  <span>(🔥NOTE! ) Hide the screen-sharing widget.</span>
-                  <div className="mt-2">
-                    <Image
-                      src="/api/placeholder/300/60"
-                      alt="Screen sharing widget"
-                      width={300}
-                      height={60}
-                      className="border border-orange-500 rounded"
-                      style={{backgroundColor: '#1a1a1a', padding: '8px'}}
-                    />
-                  </div>
+      <main className="flex-1 bg-[#404040] rounded-2xl flex overflow-hidden">
+        <div className="flex-1 p-8 overflow-y-auto">
+            {isLoading ? (
+                 <p className="text-yellow-400 animate-pulse">Buzzer is thinking...</p>
+            ) : response ? (
+                <pre className="whitespace-pre-wrap font-sans text-base">{response}</pre>
+            ) : (
+                <div className="space-y-6 text-gray-200">
+                    <p className="text-center text-yellow-400 font-semibold">{micStatus}</p>
+                    <div className="flex items-center gap-3">
+                        <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span></span>
+                        <p className="text-lg">Started meeting : <span className="font-bold">{settings?.primaryTechnology || 'General'} Interview</span></p>
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-bold mb-2">Live Transcript:</h2>
+                        <p className="text-gray-400 italic h-40 overflow-y-auto p-2 bg-black/20 rounded-md">{transcript || "Waiting for speech..."}</p>
+                    </div>
                 </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
-                <span>Now ready to go. Ask to join!</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Command Options */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-              <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">⚡</span>
-              </div>
-              <div>
-                <span className="text-orange-400 font-medium">Code</span>
-                <span className="text-gray-300 ml-2">: Get the best code solution.</span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-              <div className="w-8 h-8 bg-orange-400 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">💬</span>
-              </div>
-              <div>
-                <span className="text-orange-400 font-medium">Explain</span>
-                <span className="text-gray-300 ml-2">: Crack &ldquo;How to modify this code to use Array?&rdquo;-like sudden questions.</span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-              <div className="w-8 h-8 bg-orange-400 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">❓</span>
-              </div>
-              <div>
-                <span className="text-orange-400 font-medium">Help Me</span>
-                <span className="text-gray-300 ml-2">: Trigger AI hint to crush tricky interview question.</span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white text-sm font-bold">📱</span>
-              </div>
-              <div>
-                <span className="text-blue-400 font-medium">Screen</span>
-                <span className="text-gray-300 ml-2">: Shoot one by one, for over-single-screen or multi-file code task.</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Shortcut Keys */}
-          <div className="mt-8">
-            <p className="text-sm text-gray-400">
-              + Shortcut Keys are remotely available even in the coding page.
-            </p>
-          </div>
+            )}
         </div>
 
-        {/* Right Sidebar */}
-        <div className="w-20 bg-gray-800 flex flex-col items-center py-8">
-          {/* Top Tools Section */}
-          <div className="flex flex-col space-y-12 mb-auto">
-            {/* Bullet Section */}
-            <div className="flex flex-col items-center space-y-3">
-              <div className="flex flex-col space-y-1">
-                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">Bullet</span>
-            </div>
-
-            {/* Detail Section */}
-            <div className="flex flex-col items-center space-y-3">
-              <div className="w-12 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
-                <div className="flex flex-col space-y-1">
-                  <div className="w-6 h-1 bg-gray-400 rounded"></div>
-                  <div className="w-4 h-1 bg-gray-400 rounded"></div>
-                </div>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">Detail</span>
-            </div>
-
-            {/* Transcript Section */}
-            <div className="flex flex-col items-center space-y-3">
-              <div className="w-12 h-10 bg-gray-600 rounded-lg flex items-center justify-center relative">
-                <div className="flex flex-col space-y-1">
-                  <div className="w-6 h-1 bg-gray-400 rounded"></div>
-                  <div className="w-4 h-1 bg-gray-400 rounded"></div>
-                  <div className="w-5 h-1 bg-gray-400 rounded"></div>
-                </div>
-                <div className="absolute -right-1 -top-1 w-4 h-6 bg-gray-500 rounded-sm flex items-center justify-center">
-                  <div className="w-2 h-3 bg-gray-400 rounded-full"></div>
-                </div>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">Transcript</span>
-            </div>
-          </div>
-
-          {/* Action Buttons Section */}
-          <div className="flex flex-col space-y-4 mt-12">
-            {/* Code Button */}
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
-              <div className="text-white text-lg font-bold mb-1">{'</>'}</div>
-              <div className="text-white text-xs font-medium">Code</div>
-              <div className="text-yellow-200 text-xs">Cmd + .</div>
-            </div>
-
-            {/* Explain Button */}
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
-              <div className="text-white text-lg font-bold mb-1">💬</div>
-              <div className="text-white text-xs font-medium">Explain</div>
-              <div className="text-yellow-200 text-xs">Cmd + ,</div>
-            </div>
-
-            {/* Screen Button */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex flex-col items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
-              <div className="text-white text-lg font-bold mb-1">📷</div>
-              <div className="text-white text-xs font-medium">Screen</div>
-              <div className="text-blue-200 text-xs">Cmd+Insert</div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <aside className="w-32 bg-[#2d2d2d]/50 flex-shrink-0 flex flex-col items-center p-4 space-y-3">
+           <button onClick={() => setResponse('')} className="flex flex-col items-center text-gray-300 hover:text-white transition-colors">
+              <DocumentTextIcon />
+              <span className="text-xs mt-1">Transcript</span>
+           </button>
+           <div className="w-full border-b border-gray-600"></div>
+           <SidebarButton onClick={() => handleActionClick('Code')} isActive={activeAction === 'Code'} icon={<CodeBracketIcon />} label="Code" shortcut="Click" />
+           <SidebarButton onClick={() => handleActionClick('Explain')} isActive={activeAction === 'Explain'} icon={<ChatBubbleBottomCenterTextIcon />} label="Explain" shortcut="Click" />
+           <SidebarButton onClick={() => setActiveAction('Help Me')} isActive={activeAction === 'Help Me'} icon={<SparklesIcon />} label="Help Me" shortcut="Space | En..." />
+           <SidebarButton icon={<ComputerDesktopIcon />} label="Screen" shortcut="Ctrl+Insert" isPrimary />
+        </aside>
+      </main>
     </div>
   );
-}
+};
+
+export default StealthConsole;
