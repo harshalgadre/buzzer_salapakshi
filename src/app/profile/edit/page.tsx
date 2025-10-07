@@ -318,7 +318,7 @@ export default function EditProfile() {
                 <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="font-medium">Back to Dashboard</span>
+                <span className="font-medium">Back</span>
               </button>
               <div className="h-8 w-px bg-gray-300 mx-2"></div>
               <div className="flex items-center space-x-3">

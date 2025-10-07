@@ -92,12 +92,12 @@ export default function Dashboard() {
     }
 
     const token = localStorage.getItem('token');
-    
+
     if (session?.user) {
       if (session.user.jwt && !token) {
         localStorage.setItem('token', session.user.jwt);
       }
-      
+
       if (session.user.name && session.user.email) {
         setUserData({
           fullName: session.user.name,
@@ -139,18 +139,10 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-200 mx-auto"></div>
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-600 mx-auto absolute top-0"></div>
-          </div>
-          <p className="mt-6 text-lg text-gray-700 font-medium">Loading your dashboard...</p>
-          <div className="mt-2 flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-          </div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -288,7 +280,7 @@ export default function Dashboard() {
                 <span>{Math.round(((userData?.triggersUsed || 15) / (userData?.triggersLimit || 40)) * 100)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-gradient-to-r from-blue-400 to-blue-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${((userData?.triggersUsed || 15) / (userData?.triggersLimit || 40)) * 100}%` }}
                 ></div>
@@ -314,7 +306,7 @@ export default function Dashboard() {
               <p className="text-2xl font-bold text-gray-900">28 hrs</p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-7 gap-6">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
               const height = Math.random() * 60 + 20;
@@ -325,13 +317,12 @@ export default function Dashboard() {
                     {day}
                   </span>
                   <div className="h-32 w-8 bg-gray-100 rounded-full flex items-end p-1 relative overflow-hidden">
-                    <div 
-                      className={`w-full rounded-full transition-all duration-1000 ease-out ${
-                        isToday 
-                          ? 'bg-gradient-to-t from-orange-500 to-orange-400 shadow-lg' 
+                    <div
+                      className={`w-full rounded-full transition-all duration-1000 ease-out ${isToday
+                          ? 'bg-gradient-to-t from-orange-500 to-orange-400 shadow-lg'
                           : 'bg-gradient-to-t from-gray-300 to-gray-200'
-                      } group-hover:shadow-lg`}
-                      style={{ 
+                        } group-hover:shadow-lg`}
+                      style={{
                         height: `${height}%`,
                         animationDelay: `${index * 100}ms`
                       }}
@@ -347,7 +338,7 @@ export default function Dashboard() {
               );
             })}
           </div>
-          
+
           <div className="mt-8 flex items-center justify-center space-x-8 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"></div>
@@ -375,7 +366,7 @@ export default function Dashboard() {
                 <p className="text-gray-600">Customize your interview experience</p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <button
                 onClick={handleEditProfile}
@@ -386,7 +377,7 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
-              
+
               <button
                 onClick={() => router.push('/interview/history')}
                 className="w-full group bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-300 hover:scale-105 flex items-center justify-between"
@@ -412,7 +403,7 @@ export default function Dashboard() {
                 <p className="text-gray-600">Your performance at a glance</p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-green-50 rounded-2xl">
                 <div className="flex items-center space-x-3">
@@ -423,7 +414,7 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xl font-bold text-green-600">85%</span>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-blue-50 rounded-2xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -433,7 +424,7 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xl font-bold text-blue-600">45m</span>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-purple-50 rounded-2xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
