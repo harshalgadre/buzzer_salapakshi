@@ -13,7 +13,7 @@ import {
   StealthLogoIcon,
   RocketLaunchIcon,
   FireIcon,
-} from '../icons';
+} from './icons/icon';
 
 // Speech Recognition Types
 interface SpeechRecognitionResult { isFinal: boolean; [key: number]: { transcript: string } }
