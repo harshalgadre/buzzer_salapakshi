@@ -8,6 +8,11 @@ export interface IUser extends mongoose.Document {
   password?: string;
   googleId?: string;
   provider: 'local' | 'google';
+  bio?: string;
+  phone?: string;
+  location?: string;
+  skills?: string[];
+  resumeUrl?: string;
   createdAt: Date;
   matchPassword: (enteredPassword: string) => Promise<boolean>;
   getSignedJwtToken: () => string;
@@ -43,6 +48,25 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ['local', 'google'],
     default: 'local'
+  },
+  bio: {
+    type: String,
+    maxlength: [500, 'Bio cannot be more than 500 characters']
+  },
+  phone: {
+    type: String,
+    maxlength: [20, 'Phone number cannot be more than 20 characters']
+  },
+  location: {
+    type: String,
+    maxlength: [100, 'Location cannot be more than 100 characters']
+  },
+  skills: [{
+    type: String,
+    maxlength: [50, 'Skill name cannot be more than 50 characters']
+  }],
+  resumeUrl: {
+    type: String
   },
   createdAt: {
     type: Date,

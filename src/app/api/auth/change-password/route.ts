@@ -36,6 +36,7 @@ export async function PUT(request: NextRequest) {
     // Extract and verify token
     const token = extractToken(request);
     if (!token) {
+      console.log('Change password: No token provided');
       return NextResponse.json(
         { success: false, message: 'No token provided' },
         { status: 401 }
@@ -43,13 +44,17 @@ export async function PUT(request: NextRequest) {
     }
 
     const decoded = await verifyToken(token);
+    console.log('Change password: Token verified for user ID:', decoded.id);
     
     // Get request body
     const body = await request.json();
     const { currentPassword, newPassword } = body;
 
+    console.log('Change password: Request body received, currentPassword provided:', !!currentPassword, 'newPassword provided:', !!newPassword);
+
     // Validate input
     if (!currentPassword || !newPassword) {
+      console.log('Change password: Missing required fields');
       return NextResponse.json(
         { success: false, message: 'Current password and new password are required' },
         { status: 400 }
@@ -57,6 +62,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (newPassword.length < 6) {
+      console.log('Change password: New password too short');
       return NextResponse.json(
         { success: false, message: 'New password must be at least 6 characters long' },
         { status: 400 }
@@ -66,15 +72,19 @@ export async function PUT(request: NextRequest) {
     // Find user and include password field
     const user = await User.findById(decoded.id).select('+password');
     if (!user) {
+      console.log('Change password: User not found for ID:', decoded.id);
       return NextResponse.json(
         { success: false, message: 'User not found' },
         { status: 404 }
       );
     }
 
+    console.log('Change password: User found, provider:', user.provider, 'has password:', !!user.password);
+
     // Check if user is using local authentication (has a password)
     if (user.provider !== 'local' || !user.password) {
       const providerName = user.provider === 'google' ? 'Google' : 'OAuth';
+      console.log('Change password: User is not local auth user, provider:', user.provider);
       return NextResponse.json(
         { 
           success: false, 
@@ -86,6 +96,7 @@ export async function PUT(request: NextRequest) {
 
     // Verify current password
     const isCurrentPasswordValid = await user.matchPassword(currentPassword);
+    console.log('Change password: Current password validation result:', isCurrentPasswordValid);
     if (!isCurrentPasswordValid) {
       return NextResponse.json(
         { success: false, message: 'Current password is incorrect' },
@@ -95,6 +106,7 @@ export async function PUT(request: NextRequest) {
 
     // Check if new password is different from current password
     const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    console.log('Change password: New password same as current:', isSamePassword);
     if (isSamePassword) {
       return NextResponse.json(
         { success: false, message: 'New password must be different from current password' },
@@ -106,12 +118,14 @@ export async function PUT(request: NextRequest) {
     const salt = await bcrypt.genSalt(10);
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
     
+    console.log('Change password: Updating user password');
     await User.findByIdAndUpdate(
       decoded.id,
       { password: hashedNewPassword },
       { new: true }
     );
 
+    console.log('Change password: Password updated successfully for user:', decoded.id);
     return NextResponse.json({
       success: true,
       message: 'Password updated successfully'
