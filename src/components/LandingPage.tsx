@@ -319,7 +319,7 @@ const Landing = () => {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section className="py-20 bg-gradient-to-t from-orange-50 to-white px-6 text-center">
+      <section id='faq' className="py-20 bg-gradient-to-t from-orange-50 to-white px-6 text-center">
         <h2 className="text-4xl font-extrabold text-orange-600 mb-10">FAQ</h2>
         <div className="max-w-3xl mx-auto space-y-4 text-left">
           {faqs.map((faq, index) => (
