@@ -348,9 +348,9 @@ const Landing = () => {
             </div>
           ))}
         </div>
-        <footer className="mt-12 sm:mt-16 border-t border-orange-200 pt-11 text-xs sm:text-sm text-gray-600">
-          <p className="text-center">
-            <span className="font-semibold text-orange-600">Buzzer ©2025.</span>{" "}
+        <footer className="items-center mt-12 sm:mt-16 border-t border-orange-200  text-xs sm:text-sm text-gray-600">
+          <p className="text-center mt-10">
+            <span className="font-semibold text-orange-600 ">Buzzer ©2025.</span>{" "}
             All rights reserved.
           </p>
         </footer>
