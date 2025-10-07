@@ -27,14 +27,16 @@ const Nav = () => {
           <Link href="#pricing" className="hover:text-blue-600">
             Pricing
           </Link>
-          <Link href="#console" className="hover:text-blue-600">
+          <Link href="/console" className="hover:text-blue-600">
             Console
           </Link>
           <Link href="#faq" className="hover:text-blue-600">
             FAQ
           </Link>
           <button className="bg-white text-[#ff751f] px-5 py-2 rounded-full font-semibold transition hover:bg-orange-100">
-            Login
+            <Link href="/login">
+              Login
+            </Link>
           </button>
         </div>
 
@@ -58,14 +60,16 @@ const Nav = () => {
           <Link href="#pricing" className="block hover:text-orange-200">
             Pricing
           </Link>
-          <Link href="#console" className="block hover:text-orange-200">
+          <Link href="/console" className="block hover:text-orange-200">
             Console
           </Link>
           <Link href="#faq" className="block hover:text-orange-200">
             FAQ
           </Link>
           <button className="w-full bg-white text-[#ff751f] font-semibold px-5 py-2 rounded-full hover:bg-orange-100 transition">
-            Login
+            <Link href="/login">
+              Login
+            </Link>
           </button>
         </div>
       )}
