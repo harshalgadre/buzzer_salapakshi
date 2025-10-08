@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     }
     
     return NextResponse.json(
-      { success: true, token },
+      { success: true, token, email: user.email },
       { status: 200 }
     );
   } catch (error: unknown) {
