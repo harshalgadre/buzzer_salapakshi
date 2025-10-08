@@ -143,16 +143,16 @@ export default function LoginPage() {
             )}
 
             {/* Test Account Info */}
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded text-sm">
+            {/* <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded text-sm">
               <strong>Test Account:</strong> Use email <code>test@example.com</code> with password <code>password123</code> to login, or register a new account below.
-            </div>
+            </div> */}
             <div>
               <input
                 type="email"
                 placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-orange-300 focus:outline-none"
+                className="w-full px-4 py-3 rounded-lg border-1 focus:ring-2 focus:ring-orange-300 focus:outline-none"
                 required
                 suppressHydrationWarning
               />
@@ -164,7 +164,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-orange-300 focus:outline-none"
+                className="w-full px-4 py-3 rounded-lg border-1 focus:ring-2 focus:ring-orange-300 focus:outline-none"
                 required
                 suppressHydrationWarning
               />
@@ -181,12 +181,12 @@ export default function LoginPage() {
 
           {/* Footer Links */}
           <div className="text-center mt-6">
-            <p className="text-white text-sm">
+            {/* <p className="text-white text-sm">
               No account yet?{' '}
               <a href="/signup" className="underline hover:no-underline">
                 Join here
               </a>
-            </p>
+            </p> */}
             <p className="text-white text-sm mt-2">
               Forgot password?{' '}
               <a href="/forgot-password" className="underline hover:no-underline">
